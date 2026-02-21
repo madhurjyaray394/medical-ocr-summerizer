@@ -1,0 +1,159 @@
+/* Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f0f4f8;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+h1 {
+    color: #2b6cb0;
+    margin-bottom: 10px;
+}
+
+/* Upload Section */
+.upload-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.file-input-wrapper {
+    margin-bottom: 20px;
+}
+
+#medicineImage {
+    display: none;
+}
+
+#fileLabel {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #edf2f7;
+    color: #4a5568;
+    border: 2px dashed #cbd5e0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#fileLabel:hover {
+    background-color: #e2e8f0;
+    border-color: #a0aec0;
+}
+
+button {
+    background-color: #3182ce;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2b6cb0;
+}
+
+button:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+}
+
+/* Image Preview */
+#imagePreviewContainer {
+    margin-top: 20px;
+}
+
+#imagePreview {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Loading */
+#loading {
+    margin-top: 20px;
+    color: #2b6cb0;
+    font-weight: bold;
+}
+
+/* Results Section */
+#resultsSection {
+    background-color: #f7fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+#resultsSection h2 {
+    color: #2d3748;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.result-card {
+    background-color: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.result-card h3 {
+    font-size: 16px;
+    color: #4a5568;
+    margin-bottom: 5px;
+}
+
+.result-card p {
+    color: #2d3748;
+}
+
+.warnings h3 {
+    color: #c53030;
+}
+
+/* Footer / Disclaimer */
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.disclaimer {
+    background-color: #fff5f5;
+    color: #c53030;
+    padding: 15px;
+    border-left: 4px solid #f56565;
+    font-size: 14px;
+    border-radius: 4px;
+}

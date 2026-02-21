@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Medicine Search</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Medicine Search</h1>
+            <p>Upload a clear image of a medicine box to identify it and get details.</p>
+        </header>
+
+        <main>
+            <!-- Upload Form -->
+            <section class="upload-section">
+                <form id="uploadForm">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="medicineImage" accept="image/*" required>
+                        <label for="medicineImage" id="fileLabel">Choose an image</label>
+                    </div>
+                    <button type="submit" id="submitBtn">Analyze Medicine</button>
+                </form>
+
+                <!-- Image Preview Area -->
+                <div id="imagePreviewContainer" style="display: none;">
+                    <img id="imagePreview" alt="Medicine Preview">
+                </div>
+
+                <!-- Loading indicator -->
+                <div id="loading" style="display: none;">
+                    <p>Analyzing image... Please wait.</p>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="resultsSection" style="display: none;">
+                <h2>Results</h2>
+
+                <div class="result-card" style="background-color: #f8fafc; border-left: 4px solid #3182ce;">
+                    <h3>Raw OCR Text (Debugging):</h3>
+                    <pre id="rawOcrText"
+                        style="white-space: pre-wrap; font-size: 14px; background: #edf2f7; padding: 10px; border-radius: 4px;">-</pre>
+                </div>
+
+                <div class="result-card">
+                    <h3>Identified Name:</h3>
+                    <p id="medicineName">-</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>What it is used for (Indications):</h3>
+                    <p id="medicineUsage">-</p>
+                </div>
+
+                <div class="result-card warnings">
+                    <h3>Warnings & Precautions:</h3>
+                    <p id="medicineWarnings">-</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="disclaimer">
+                <strong>MEDICAL DISCLAIMER:</strong> This application is for informational purposes only. The OCR
+                technology may not always be 100% accurate. Do not rely solely on this information for medical
+                decisions. Always consult a qualified healthcare provider or pharmacist before taking any medication.
+            </div>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
