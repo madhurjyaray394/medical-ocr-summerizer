@@ -4,16 +4,16 @@ const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 const { GoogleGenAI } = require('@google/genai');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-// IMPORTANT: Replace this with your actual free API key from https://ocr.space/OCRAPI
-const OCR_API_KEY = 'K86751595388957';
+// API keys are now securely loaded from .env file
+const OCR_API_KEY = process.env.OCR_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-// IMPORTANT: Replace this with your actual free API key from https://aistudio.google.com/
-const GEMINI_API_KEY = 'AIzaSyDOudT8qBjq645xYknXw9NnSMdxcjtrM-8';
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 // Set up server to serve your HTML/CSS/JS files from the "public" folder
@@ -161,5 +161,4 @@ app.post('/api/scan', upload.single('medicineImage'), async (req, res) => {
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
-    console.log(`Don't forget to put your API key in server.js!`);
 });
