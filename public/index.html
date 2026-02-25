@@ -5,73 +5,131 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Medicine Search</title>
+    <!-- Pixelify Sans font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="container">
-        <header>
-            <h1>AI Medicine Search</h1>
-            <p>Upload a clear image of a medicine box to identify it and get details.</p>
-        </header>
-
+        <!-- Main Content -->
         <main>
             <!-- Upload Form -->
-            <section class="upload-section">
-                <form id="uploadForm">
-                    <div class="file-input-wrapper">
-                        <input type="file" id="medicineImage" accept="image/*" required>
-                        <label for="medicineImage" id="fileLabel">Choose an image</label>
+            <section class="upload-section" id="uploadSection">
+                <div class="primary-card welcome-card">
+                    <h1>Welcome</h1>
+                    <p class="subtitle">upload medicine image<br>below</p>
+
+                    <form id="uploadForm">
+                        <div class="file-input-wrapper">
+                            <input type="file" id="medicineImage" accept="image/*" required>
+
+                            <label for="medicineImage" class="image-box" id="imageBox">
+                                <span id="fileLabel" style="display:none;"></span>
+
+                                <div class="image-ellipse" id="ellipseIcon">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#000"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                </div>
+
+                                <!-- Image Preview Area -->
+                                <div id="imagePreviewContainer" style="display: none;">
+                                    <img id="imagePreview" alt="Medicine Preview">
+                                </div>
+                            </label>
+                        </div>
+                        <button type="submit" id="submitBtn" class="m-btn">Analyze</button>
+                    </form>
+
+                    <!-- Loading indicator -->
+                    <div id="loading" style="display: none;">
+                        <p class="loading-text">Analyzing image... Please wait.</p>
                     </div>
-                    <button type="submit" id="submitBtn">Analyze Medicine</button>
-                </form>
-
-                <!-- Image Preview Area -->
-                <div id="imagePreviewContainer" style="display: none;">
-                    <img id="imagePreview" alt="Medicine Preview">
-                </div>
-
-                <!-- Loading indicator -->
-                <div id="loading" style="display: none;">
-                    <p>Analyzing image... Please wait.</p>
                 </div>
             </section>
 
             <!-- Results Section -->
             <section id="resultsSection" style="display: none;">
-                <h2>Results</h2>
-
-                <div class="result-card" style="background-color: #f8fafc; border-left: 4px solid #3182ce;">
-                    <h3>Texts on Image:</h3>
-                    <pre id="rawOcrText"
-                        style="white-space: pre-wrap; font-size: 14px; background: #edf2f7; padding: 10px; border-radius: 4px;">-</pre>
+                <!-- Hide OCR Text to match mockup styling -->
+                <div style="display: none;">
+                    <pre id="rawOcrText"></pre>
                 </div>
 
-                <div class="result-card">
-                    <h3>Identified Name:</h3>
+                <div class="primary-card result-card">
+                    <h3>▷ Identified Name:</h3>
                     <p id="medicineName">-</p>
                 </div>
 
-                <div class="result-card">
-                    <h3>What it is used for:</h3>
+                <div class="primary-card result-card">
+                    <h3>▷ What it is used for:</h3>
                     <p id="medicineUsage">-</p>
                 </div>
 
-                <div class="result-card warnings">
-                    <h3>Warnings & Precautions:</h3>
+                <div class="primary-card result-card warnings">
+                    <h3>▷ Warnings & Precautions:</h3>
                     <p id="medicineWarnings">-</p>
                 </div>
+
+                <div class="disclaimer-card">
+                    <p><strong>MEDICAL DISCLAIMER:</strong> This application is for informational purposes only. The OCR
+                        technology may not always be 100% accurate. Do not rely solely on this information for medical
+                        decisions. Always consult a qualified healthcare provider or pharmacist before taking any
+                        medication.</p>
+                    <div class="hand-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 11V6a2 2 0 0 0-4 0v4" />
+                            <path d="M14 10V5a2 2 0 0 0-4 0v5" />
+                            <path d="M10 10.5V4a2 2 0 0 0-4 0v9" />
+                            <path d="M6 14v-2a2 2 0 0 0-4 0v5a7 7 0 0 0 14 0v-4a2 2 0 0 0-4 0v-2" />
+                        </svg>
+                    </div>
+                </div>
+
+                <button type="button" id="searchAnotherBtn" class="m-btn" onclick="location.reload();">Search Another
+                    image</button>
             </section>
         </main>
-
-        <footer>
-            <div class="disclaimer">
-                <strong>MEDICAL DISCLAIMER:</strong> This application is for informational purposes only. The OCR
-                technology may not always be 100% accurate. Do not rely solely on this information for medical
-                decisions. Always consult a qualified healthcare provider or pharmacist before taking any medication.
-            </div>
-        </footer>
     </div>
+
+    <!-- Script that does NOT modify existing functionalities, just manages UI logic for image preview replacement -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const imgInput = document.getElementById('medicineImage');
+            const ellipseIcon = document.getElementById('ellipseIcon');
+            const resultsSection = document.getElementById('resultsSection');
+            const uploadSectionStyle = document.getElementById('uploadSection');
+
+            // Hide ellipse icon when image preview is shown
+            imgInput.addEventListener('change', function (e) {
+                if (e.target.files && e.target.files.length > 0) {
+                    ellipseIcon.style.display = 'none';
+                } else {
+                    ellipseIcon.style.display = 'flex';
+                }
+            });
+
+            // After analysis finishes (which makes resultsSection viewable in script.js)
+            // We use a MutationObserver to hide the upload section if results are displayed, 
+            // since the mockup shows them as separate screens without altering script.js logic.
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'style') {
+                        if (resultsSection.style.display === 'block') {
+                            uploadSectionStyle.style.display = 'none';
+                        }
+                    }
+                });
+            });
+            observer.observe(resultsSection, { attributes: true });
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 
