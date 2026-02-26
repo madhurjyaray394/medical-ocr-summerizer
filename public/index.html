@@ -98,7 +98,7 @@
         </main>
     </div>
 
-    <!-- Script that does NOT modify existing functionalities, just manages UI logic for image preview replacement -->
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const imgInput = document.getElementById('medicineImage');
@@ -115,9 +115,7 @@
                 }
             });
 
-            // After analysis finishes (which makes resultsSection viewable in script.js)
-            // We use a MutationObserver to hide the upload section if results are displayed, 
-            // since the mockup shows them as separate screens without altering script.js logic.
+            
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     if (mutation.attributeName === 'style') {

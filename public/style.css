@@ -221,7 +221,7 @@ h3 {
     color: var(--button);
 }
 
-/* Ensure headings align properly in results */
+
 .result-card h3 {
     display: flex;
     align-items: center;
