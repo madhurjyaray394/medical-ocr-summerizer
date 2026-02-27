@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'DIN Round Pro';
+    src: url('fonts/dinroundpro.otf') format('opentype');
+}
+
 :root {
     --background: #FEF9EF;
     --button: #312509;
@@ -17,7 +22,7 @@
 
 body {
     background-color: var(--background);
-    font-family: 'Pixelify Sans', sans-serif;
+    font-family: 'DIN Round Pro', sans-serif;
     color: var(--text-color);
     display: flex;
     justify-content: center;
@@ -56,6 +61,60 @@ h3 {
     font-weight: 500;
 }
 
+/* Upload Prompt Toast */
+.upload-prompt {
+    background-color: var(--button);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+    margin-bottom: 20px;
+    border: 2px solid #000;
+    box-shadow: 0 4px 0 var(--button-shadow);
+    animation: float-toast 2s ease-in-out infinite;
+}
+
+.upload-prompt-arrow {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #000;
+}
+
+.upload-prompt-arrow::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--button);
+}
+
+@keyframes float-toast {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
 /* Primary Card Styles */
 .primary-card {
     background-color: var(--primary-card);
@@ -72,6 +131,29 @@ h3 {
     align-items: center;
     min-height: 500px;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mascot-container {
+    position: fixed;
+    bottom: 0;
+    left: 40%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.mascot-logo {
+    position: absolute;
+    bottom: -15px;
+    right: -80px;
+    /* Pulls it slightly to the right parallel to the card */
+    width: 180px;
+    height: auto;
+    pointer-events: none;
 }
 
 /* Result Cards */
@@ -160,7 +242,7 @@ h3 {
     padding: 18px 30px;
     border-radius: 12px;
     font-size: 20px;
-    font-family: 'Pixelify Sans', sans-serif;
+    font-family: 'DIN Round Pro', sans-serif;
     font-weight: 500;
     cursor: pointer;
     box-shadow: 0 6px 0 var(--button-shadow);
@@ -169,6 +251,8 @@ h3 {
     margin: 0 auto;
     width: 85%;
     text-align: center;
+    position: relative;
+    z-index: 2;
 }
 
 .m-btn:active {
@@ -197,17 +281,12 @@ h3 {
     padding: 25px 20px;
     margin-bottom: 25px;
     text-align: center;
-    font-size: 11px;
+    font-size: 16px;
     line-height: 1.6;
     animation: float 3s ease-in-out infinite;
     animation-delay: 0.5s;
 }
 
-.hand-icon {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-}
 
 /* Loading */
 #loading {

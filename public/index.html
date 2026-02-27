@@ -5,10 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Medicine Search</title>
-    <!-- Pixelify Sans font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -21,6 +17,12 @@
                 <div class="primary-card welcome-card">
                     <h1>Welcome</h1>
                     <p class="subtitle">upload medicine image<br>below</p>
+
+                    <!-- Upload Prompt Toast -->
+                    <div class="upload-prompt">
+                        click below
+                        <div class="upload-prompt-arrow"></div>
+                    </div>
 
                     <form id="uploadForm">
                         <div class="file-input-wrapper">
@@ -52,6 +54,11 @@
                         <p class="loading-text">Analyzing image... Please wait.</p>
                     </div>
                 </div>
+
+                <!-- Mascot Logo Container -->
+                <div class="mascot-container">
+                    <img src="mascot.png" alt="Mascot Logo" class="mascot-logo">
+                </div>
             </section>
 
             <!-- Results Section -->
@@ -81,15 +88,6 @@
                         technology may not always be 100% accurate. Do not rely solely on this information for medical
                         decisions. Always consult a qualified healthcare provider or pharmacist before taking any
                         medication.</p>
-                    <div class="hand-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 11V6a2 2 0 0 0-4 0v4" />
-                            <path d="M14 10V5a2 2 0 0 0-4 0v5" />
-                            <path d="M10 10.5V4a2 2 0 0 0-4 0v9" />
-                            <path d="M6 14v-2a2 2 0 0 0-4 0v5a7 7 0 0 0 14 0v-4a2 2 0 0 0-4 0v-2" />
-                        </svg>
-                    </div>
                 </div>
 
                 <button type="button" id="searchAnotherBtn" class="m-btn" onclick="location.reload();">Search Another
@@ -98,7 +96,7 @@
         </main>
     </div>
 
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const imgInput = document.getElementById('medicineImage');
@@ -115,7 +113,7 @@
                 }
             });
 
-            
+
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     if (mutation.attributeName === 'style') {
