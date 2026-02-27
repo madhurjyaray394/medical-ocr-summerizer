@@ -138,7 +138,7 @@ h3 {
 .mascot-container {
     position: fixed;
     bottom: 0;
-    left: 40%;
+    left: 10%;
     transform: translateX(-50%);
     width: 100%;
     max-width: 420px;
@@ -151,7 +151,7 @@ h3 {
     bottom: -15px;
     right: -80px;
     /* Pulls it slightly to the right parallel to the card */
-    width: 180px;
+    width: 100px;
     height: auto;
     pointer-events: none;
 }

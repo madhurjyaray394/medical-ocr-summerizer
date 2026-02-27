@@ -37,16 +37,58 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Create form data to send to our backend
-        const formData = new FormData();
-        formData.append('medicineImage', file);
-
-        // Update UI to show loading state
+        // Update UI to show loading/compressing state
         loading.style.display = 'block';
+        document.querySelector('.loading-text').textContent = "Compressing & analyzing image... Please wait.";
         resultsSection.style.display = 'none';
         submitBtn.disabled = true;
 
         try {
+            // --- Client-Side Image Compression ---
+            const compressedBlob = await new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1200; // Define a reasonable max width
+                    const MAX_HEIGHT = 1200; // Define a reasonable max height
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Compress to JPEG with 0.7 quality to ensure it slides under 1MB API limit
+                    canvas.toBlob(
+                        (blob) => {
+                            if (blob) resolve(blob);
+                            else reject(new Error("Canvas to Blob failed"));
+                        },
+                        'image/jpeg',
+                        0.7
+                    );
+                };
+                img.onerror = reject;
+                img.src = URL.createObjectURL(file);
+            });
+
+            // Create form data to send to our backend with the compressed blob
+            const formData = new FormData();
+            // Important: add '.jpg' extension so node's multer keeps a valid extension structure
+            formData.append('medicineImage', compressedBlob, 'compressed.jpg');
             // Send the image to our local Node.js backend
             const response = await fetch('/api/scan', {
                 method: 'POST',

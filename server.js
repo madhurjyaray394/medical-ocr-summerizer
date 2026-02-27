@@ -100,25 +100,41 @@ app.post('/api/scan', upload.single('medicineImage'), async (req, res) => {
             Do not include any formatting like Markdown code blocks (json). Just return the raw JSON object.
             `;
 
-            const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-                model: 'google/gemini-2.5-flash',
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                max_tokens: 300
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                    'HTTP-Referer': 'http://localhost:3000', // Optional, for OpenRouter rankings
-                    'X-Title': 'Medicine Search App', // Optional
-                    'Content-Type': 'application/json'
-                }
-            });
+            let aiText = "";
+            let retryCount = 0;
+            const maxRetries = 1;
 
-            let aiText = response.data.choices[0].message.content.trim();
+            while (retryCount <= maxRetries) {
+                try {
+                    const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+                        model: 'google/gemini-2.5-flash',
+                        messages: [
+                            {
+                                role: 'user',
+                                content: prompt
+                            }
+                        ],
+                        max_tokens: 300
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                            'HTTP-Referer': 'http://localhost:3000', // Optional, for OpenRouter rankings
+                            'X-Title': 'Medicine Search App', // Optional
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    aiText = response.data.choices[0].message.content.trim();
+                    break; // Success, exit loop
+                } catch (err) {
+                    retryCount++;
+                    if (retryCount > maxRetries) {
+                        throw err; // Out of retries, throw the error down to the outer catch block
+                    }
+                    console.log("OpenRouter API failed, retrying in 1 second...");
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
 
             // Cleanup any accidental markdown block formatting just in case
             if (aiText.startsWith('```json')) {
