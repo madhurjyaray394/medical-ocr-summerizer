@@ -183,6 +183,10 @@ h3 {
     opacity: 0.9;
 }
 
+.image-box:active {
+    transform: scale(0.97);
+}
+
 .image-ellipse {
     width: 90px;
     height: 90px;
@@ -237,7 +241,7 @@ h3 {
 }
 
 .m-btn:active {
-    transform: translateY(4px);
+    transform: translateY(4px) scale(0.97);
     box-shadow: 0 2px 0 var(--button-shadow);
 }
 
@@ -423,6 +427,11 @@ h3 {
 
 .menu-links a:hover {
     color: var(--primary-card);
+}
+
+.menu-links a:active {
+    display: inline-block;
+    transform: scale(0.95);
 }
 
 @media (min-width: 768px) {

@@ -40,56 +40,28 @@ app.post('/api/scan', upload.single('medicineImage'), async (req, res) => {
             return res.status(400).json({ error: 'No image file uploaded.' });
         }
 
-        // 2. Prepare the image file to send to OCR.space API
-        const formData = new FormData();
-        // Append the file using fs.createReadStream
-        formData.append('file', fs.createReadStream(req.file.path));
-        formData.append('language', 'eng');
-        formData.append('isOverlayRequired', 'false');
+        // 2. Read the image file and convert to base64
+        const imageBuffer = fs.readFileSync(req.file.path);
+        const base64Image = imageBuffer.toString('base64');
+        const mimeType = req.file.mimetype; // e.g., 'image/jpeg', 'image/png'
 
-        // 3. Send the image to OCR.space API
-        console.log("Sending image to OCR API...");
-        const ocrResponse = await axios.post('https://api.ocr.space/parse/image', formData, {
-            headers: {
-                ...formData.getHeaders(),
-                'apikey': OCR_API_KEY
-            }
-        });
-
-        // 4. Extract the text from the response
-        let extractedText = '';
-        if (ocrResponse.data && ocrResponse.data.ParsedResults && ocrResponse.data.ParsedResults.length > 0) {
-            extractedText = ocrResponse.data.ParsedResults[0].ParsedText;
-        }
-
-        // 6. Handle cases where no text was found or an API error occurred
-        if (!extractedText || ocrResponse.data.IsErroredOnProcessing) {
-            return res.status(400).json({
-                error: ocrResponse.data.ErrorMessage ? ocrResponse.data.ErrorMessage.join(', ') : 'Could not read any text from the image.'
-            });
-        }
-
-        console.log("OCR Extracted Text:\n", extractedText);
+        // 3. Prepare the payload for OpenRouter using the Vision format
+        console.log("Asking OpenRouter Gemini Vision to read and analyze the medicine image...");
 
         let extractedMedicineName = "Unknown";
         let usage = "Information not found.";
         let warnings = "Information not found.";
+        let extractedText = "Text extraction handled natively by Gemini Vision.";
 
         try {
-            console.log("Asking OpenRouter to analyze the OCR text...");
-
             const prompt = `
-            You are a medical assistant looking at text extracted from a medicine box or bottle using OCR.
-            Here is the raw text:
-            """
-            ${extractedText}
-            """
+            You are a medical assistant looking at an image of a medicine box or bottle.
+            Please read the text on the package to identify the actual name of the medicine.
             
-            Based on this text, please identify the actual name of the medicine.
-            Once you identify the medicine name from the text, use your general knowledge to provide:
+            Based on the medicine you identify in the image, use your general medical knowledge to provide:
             1. The name of the medicine.
             2. What the medicine is commonly used for (indications). Keep it simple and easy to understand.
-            3. Common major warnings, side effects, or precautions for this medicine. Do not just say "none listed in text". You must provide actual warnings for the drug you identified.
+            3. Common major warnings, side effects, or precautions for this medicine. Do not just say "none listed". Provide actual common warnings for the drug you identified.
             
             Return your answer STRICTLY as a JSON object with these exact keys: "name", "usage", "warnings".
             Do not include any formatting like Markdown code blocks (json). Just return the raw JSON object.
@@ -102,14 +74,25 @@ app.post('/api/scan', upload.single('medicineImage'), async (req, res) => {
             while (retryCount <= maxRetries) {
                 try {
                     const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-                        model: 'google/gemini-2.5-flash',
+                        model: 'google/gemini-2.0-flash-001',
                         messages: [
                             {
                                 role: 'user',
-                                content: prompt
+                                content: [
+                                    {
+                                        type: "text",
+                                        text: prompt
+                                    },
+                                    {
+                                        type: "image_url",
+                                        image_url: {
+                                            url: `data:${mimeType};base64,${base64Image}`
+                                        }
+                                    }
+                                ]
                             }
                         ],
-                        max_tokens: 300
+                        max_tokens: 500
                     }, {
                         headers: {
                             'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
@@ -120,13 +103,17 @@ app.post('/api/scan', upload.single('medicineImage'), async (req, res) => {
                     });
 
                     aiText = response.data.choices[0].message.content.trim();
+                    console.log("OpenRouter raw response:", aiText);
                     break; // Success, exit loop
                 } catch (err) {
                     retryCount++;
+                    const errorDetail = err.response ? JSON.stringify(err.response.data) : err.message;
+                    console.error(`OpenRouter API attempt ${retryCount} failed:`, errorDetail);
+
                     if (retryCount > maxRetries) {
-                        throw err; // Out of retries, throw the error down to the outer catch block
+                        throw err; // Out of retries, throw the error
                     }
-                    console.log("OpenRouter API failed, retrying in 1 second...");
+                    console.log("Retrying in 1 second...");
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             }
@@ -151,8 +138,8 @@ app.post('/api/scan', upload.single('medicineImage'), async (req, res) => {
             console.log("OpenRouter successfully analyzed the medicine!");
 
         } catch (aiError) {
-            console.error("OpenRouter API Error:", aiError.response ? aiError.response.data : aiError.message);
-            usage = "Could not analyze the medicine automatically. Please check your OpenRouter API key.";
+            console.error("Analysis Error Detail:", aiError.response ? aiError.response.data : aiError.message);
+            usage = "Could not analyze the medicine automatically. Please check your OpenRouter API key or model availability.";
         }
 
         // 7. Send everything back to the frontend
@@ -164,8 +151,8 @@ app.post('/api/scan', upload.single('medicineImage'), async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Server Error:", error);
-        res.status(500).json({ error: 'An internal server error occurred during processing.' });
+        console.error("Full Server Error Stack:", error);
+        res.status(500).json({ error: 'An internal server error occurred during processing. Check server console for details.' });
     } finally {
         // ALWAYS clean up temp file, regardless of success or error
         if (req.file && fs.existsSync(req.file.path)) {
