@@ -8,21 +8,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsSection = document.getElementById('resultsSection');
     const submitBtn = document.getElementById('submitBtn');
 
+    let currentPreviewUrl = null;
+
     // Display selected file name and preview the image
     fileInput.addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (file) {
             fileLabel.textContent = file.name;
 
-            // Create a preview of the image
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                imagePreview.src = e.target.result;
-                imagePreviewContainer.style.display = 'block';
+            // Free up memory from previous image preview
+            if (currentPreviewUrl) {
+                URL.revokeObjectURL(currentPreviewUrl);
             }
-            reader.readAsDataURL(file);
+
+            // Create a memory-efficient preview URL (doesn't load entire file to RAM as base64)
+            currentPreviewUrl = URL.createObjectURL(file);
+            imagePreview.src = currentPreviewUrl;
+
+            imagePreviewContainer.style.display = 'block';
         } else {
             fileLabel.textContent = 'Choose an image';
+            imagePreview.src = ''; // Clear image reference
             imagePreviewContainer.style.display = 'none';
         }
     });
@@ -44,12 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
 
         try {
-            // Check file size. If it's less than 1MB, skip the memory-intensive canvas compression entirely.
+            // Check file size. If it's > 300KB, use the canvas compression.
             let fileToSend = file;
             let fileName = file.name;
             const fileSizeMB = file.size / (1024 * 1024);
 
-            if (fileSizeMB > 1.0) {
+            if (fileSizeMB > 0.3) {
                 // --- Client-Side Image Compression (Optimized for Mobile Memory) ---
                 console.log(`File is ${fileSizeMB.toFixed(2)}MB, compressing...`);
                 fileToSend = await new Promise((resolve, reject) => {
