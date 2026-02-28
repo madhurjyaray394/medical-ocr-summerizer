@@ -135,27 +135,6 @@ h3 {
     overflow: hidden;
 }
 
-.mascot-container {
-    position: fixed;
-    bottom: 0;
-    left: 10%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 420px;
-    pointer-events: none;
-    z-index: 10;
-}
-
-.mascot-logo {
-    position: absolute;
-    bottom: -15px;
-    right: -80px;
-    /* Pulls it slightly to the right parallel to the card */
-    width: 100px;
-    height: auto;
-    pointer-events: none;
-}
-
 /* Result Cards */
 .result-card {
     padding: 25px 20px;
